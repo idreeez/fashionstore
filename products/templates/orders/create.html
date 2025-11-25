@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block content %}
+<main class="pt-5 mt-5">
+    <style>
+        html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    }
+
+    main {
+        flex: 1 0 auto;
+    }
+
+    footer {
+        flex-shrink: 0;
+    }
+    </style>
+  <div class="container py-4">
+    <h1 class="mb-4" style="font-size: 70px;">Оформление заказа</h1>
+    
+    <div class="row g-4">
+      <!-- Форма -->
+      <div class="col-md-8">
+        <form method="post" action="{% url 'orders:create_order' %}" class="p-4 border rounded bg-white shadow-sm">
+          {% csrf_token %}
+          {{ form.as_p }}
+          <button type="submit" class="btn btn-dark w-100 mt-3">Оформить заказ</button>
+        </form>
+      </div>
+
+      <!-- Блок заказа -->
+      <div class="col-12 col-sm-6 col-md-4">
+        <div class="card shadow-sm border-0">
+          <div class="card-header bg-dark text-white">
+            <h5 class="mb-0">Ваш заказ</h5>
+          </div>
+          <div class="card-body">
+            {% for item in cart_items %}
+              <div class="d-flex justify-content-between mb-2">
+                <span>{{ item.product.name }} × {{ item.quantity }}</span>
+                <span>{{ item.total_price }} ₽</span>
+              </div>
+            {% endfor %}
+            <hr>
+            <div class="d-flex justify-content-between">
+              <span><strong>Сумма без скидки:</strong></span>
+              <span>{{ subtotal }} ₽</span>
+            </div>
+            <div class="d-flex justify-content-between text-danger">
+              <span><strong>Скидка:</strong></span>
+              <span>– {{ discount_amount }} ₽</span>
+            </div>
+            <hr>
+            <div class="d-flex justify-content-between fw-bold">
+              <span><strong>Итого со скидкой:</strong></span>
+              <span>{{ total }} ₽</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+{% endblock %}

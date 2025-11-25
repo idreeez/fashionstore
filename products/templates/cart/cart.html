@@ -1,0 +1,381 @@
+{% extends "base.html" %}
+
+{% block content %}
+<main class="pt-5 mt-5 d-flex justify-content-center align-items-center min-vh-100">
+<div class="container">
+    <style>
+        html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1 0 auto;
+}
+
+footer {
+    flex-shrink: 0;
+}
+    h1, h4, h5 {
+        letter-spacing: 0.03em;
+    }
+
+    .table {
+        border-color: #000;
+    }
+
+    .table thead th {
+        background-color: #f8f8f8;
+        color: #000;
+        border-bottom: 2px solid #000;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        letter-spacing: 0.05em;
+    }
+
+    .table-bordered td,
+    .table-bordered th {
+        border: 1px solid #000;
+    }
+
+    .btn {
+        border-radius: 2rem;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .btn-outline-secondary {
+        color: #000;
+        border-color: #000;
+    }
+
+    .btn-outline-secondary:hover {
+        background-color: #000;
+        color: #fff;
+    }
+
+    .btn-danger {
+        background-color: transparent;
+        border: 1px solid #000;
+        color: #000;
+    }
+
+    .btn-danger:hover {
+        background-color: #000;
+        color: #fff;
+    }
+
+    .btn-primary {
+        background-color: #000;
+        border: none;
+    }
+
+    .btn-primary:hover {
+        background-color: #333;
+    }
+
+    .btn-success {
+        background-color: #000;
+        border: none;
+    }
+
+    .btn-success:hover {
+        background-color: #333;
+    }
+
+    .card {
+        background-color: #fff;
+        border: 1px solid #000;
+        border-radius: 0;
+        box-shadow: 3px 3px 0 #000;
+    }
+
+    .card-title {
+        text-transform: uppercase;
+        font-size: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    input.form-control {
+        border: 1px solid #000;
+        border-radius: 0;
+        background: #fff;
+        color: #000;
+    }
+
+    input.form-control:focus {
+        box-shadow: none;
+        border-color: #000;
+    }
+
+    #grand-total, #total-with-discount {
+        font-size: 1.25rem;
+        font-weight: bold;
+    }
+
+    .input-group .btn {
+        border-radius: 0 !important;
+    }
+
+    .quantity {
+        max-width: 60px;
+    }
+
+    .table-active {
+        background-color: #f0f0f0;
+    }
+
+    .container {
+        max-width: 960px;
+    }
+</style>
+  <form style="display:none;">{% csrf_token %}</form>
+<h1 class="mb-4" style="font-size: 70px;">Ваша корзина</h1>
+
+<!-- Версия для десктопа -->
+<div class="table-responsive d-none d-md-block">
+    <table class="table table-bordered">
+        <thead class="table-light">
+            <tr>
+                <th>Товар</th>
+                <th style="width: 150px;">Количество</th>
+                <th>Цена</th>
+                <th>Сумма</th>
+                <th style="width: 50px;"></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in cart_items %}
+            <tr class="align-middle" id="item-{{ item.id }}">
+                <td>{{ item.product.name }}</td>
+                <td>
+                    <div class="input-group">
+                        <button class="btn btn-outline-secondary minus" data-id="{{ item.id }}">-</button>
+                        <input type="number" class="form-control text-center quantity" 
+                               value="{{ item.quantity }}" min="1" data-id="{{ item.id }}">
+                        <button class="btn btn-outline-secondary plus" data-id="{{ item.id }}">+</button>
+                    </div>
+                </td>
+                <td>{{ item.product.price|floatformat:2 }} ₽</td>
+                <td class="total-price" data-id="{{ item.id }}">{{ item.total_price|floatformat:2 }} ₽</td>
+                <td>
+                    <button class="btn btn-danger remove-item" data-id="{{ item.id }}" title="Удалить">&times;</button>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" class="text-center">Корзина пуста</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr class="table-active">
+                <td colspan="3" class="text-end fw-bold">Итого:</td>
+                <td colspan="2" class="fw-bold" id="grand-total">{{ subtotal|floatformat:2 }} ₽</td>
+            </tr>
+        </tfoot>
+    </table>
+</div>
+
+<!-- Версия для мобильных -->
+<div class="d-md-none">
+    {% for item in cart_items %}
+    <div class="card mb-3" id="item-{{ item.id }}">
+        <div class="card-body">
+            <h6 class="card-title mb-2">{{ item.product.name }}</h6>
+            <p class="mb-1">Цена: {{ item.product.price|floatformat:2 }} ₽</p>
+            <p class="mb-1">Сумма: <span class="total-price" data-id="{{ item.id }}">{{ item.total_price|floatformat:2 }} ₽</span></p>
+            <div class="input-group mb-2" style="max-width: 180px;">
+                <button class="btn btn-outline-secondary minus" data-id="{{ item.id }}">-</button>
+                <input type="number" class="form-control text-center quantity"
+                       value="{{ item.quantity }}" min="1" data-id="{{ item.id }}">
+                <button class="btn btn-outline-secondary plus" data-id="{{ item.id }}">+</button>
+            </div>
+            <button class="btn btn-danger btn-sm remove-item" data-id="{{ item.id }}">Удалить</button>
+        </div>
+    </div>
+    {% empty %}
+    <div class="text-center">Корзина пуста</div>
+    {% endfor %}
+
+    <!-- Итого -->
+    <div class="card bg-light p-3">
+        <h5 class="text-end mb-2">Итого: <span id="grand-total">{{ subtotal|floatformat:2 }} ₽</span></h5>
+    </div>
+</div>
+
+<!-- Форма купона -->
+<div class="row justify-content-end mt-3">
+    <div class="col-md-5">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Промокод</h5>
+                <form id="coupon-form" class="d-flex flex-column flex-md-row gap-2">
+                    <input type="text" name="code" class="form-control" placeholder="Введите промокод" required style="font-size: 15px;">
+                    <button type="submit" class="btn btn-success w-100">Применить</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Скидка -->
+        <div class="text-end mt-2">
+            <h5>Скидка: <span id="discount-amount">
+                {% if discount_amount %}-{{ discount_amount|floatformat:2 }}{% else %}0.00{% endif %} ₽
+            </span></h5>
+            <span>Итого с учетом скидки: <span id="total-with-discount">
+                {% if discount_amount %}
+                    {{ total|floatformat:2 }} ₽
+                {% else %}
+                    {{ subtotal|floatformat:2 }} ₽
+                {% endif %}
+            </span></span>
+        </div>
+
+        <!-- Кнопка оформить заказ -->
+        <div class="d-grid gap-2 mt-4 p-3">
+            <a href="{% url 'orders:create_order' %}" class="btn btn-primary btn-lg">Оформить заказ</a>
+        </div>
+    </div>
+</div>
+
+</main>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+    function updateTotals() {
+        fetch('/cart/recalculate_totals/', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': csrftoken,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({})
+        })
+        .then(res => res.json())
+        .then(data => {
+            document.getElementById('grand-total').textContent = parseFloat(data.subtotal).toFixed(2) + ' ₽';
+            document.getElementById('discount-amount').textContent = data.coupon_applied
+                ? '-' + parseFloat(data.discount_amount).toFixed(2) + ' ₽'
+                : '0.00 ₽';
+            document.getElementById('total-with-discount').textContent = data.coupon_applied
+                ? parseFloat(data.total_with_discount).toFixed(2) + ' ₽'
+                : parseFloat(data.subtotal).toFixed(2) + ' ₽';
+        });
+    }
+
+    // Обработка кнопок +/- и ручного изменения количества
+    function updateQuantity(itemId, quantity) {
+        fetch(`/cart/update/${itemId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': csrftoken,
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `quantity=${quantity}`
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                alert(data.error);
+                return;
+            }
+            document.querySelector(`.total-price[data-id="${itemId}"]`).textContent = parseFloat(data.item_total).toFixed(2) + ' ₽';
+            updateTotals();
+        });
+    }
+
+    document.querySelectorAll('.plus, .minus').forEach(btn => {
+        btn.addEventListener('click', function () {
+            const itemId = this.dataset.id;
+            const input = document.querySelector(`.quantity[data-id="${itemId}"]`);
+            let quantity = parseInt(input.value);
+
+            quantity = this.classList.contains('plus') ? quantity + 1 : Math.max(1, quantity - 1);
+            input.value = quantity;
+
+            updateQuantity(itemId, quantity);
+        });
+    });
+
+    // Обработка ручного изменения количества через input
+    document.querySelectorAll('.quantity').forEach(input => {
+        input.addEventListener('change', function () {
+            const itemId = this.dataset.id;
+            let quantity = parseInt(this.value);
+            if (isNaN(quantity) || quantity < 1) {
+                quantity = 1;
+                this.value = quantity;
+            }
+            updateQuantity(itemId, quantity);
+        });
+    });
+
+    // Удаление товара
+    document.querySelectorAll('.remove-item').forEach(btn => {
+        btn.addEventListener('click', function () {
+            if (!confirm('Удалить товар из корзины?')) return;
+            const itemId = this.dataset.id;
+
+            fetch(`/cart/remove/${itemId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrftoken,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({})
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    const row = document.getElementById(`item-${itemId}`);
+                    if (row) row.remove();
+                    if (document.querySelector('.cart-badge')) {
+                        document.querySelector('.cart-badge').textContent = data.cart_count;
+                    }
+                    updateTotals();
+
+                    // Если корзина стала пустой, можно показать сообщение (по желанию)
+                    if (data.cart_count === 0) {
+                        const tbody = document.querySelector('table tbody');
+                        tbody.innerHTML = '<tr><td colspan="5" class="text-center">Корзина пуста</td></tr>';
+                        document.getElementById('grand-total').textContent = '0.00 ₽';
+                        document.getElementById('discount-amount').textContent = '0.00 ₽';
+                        document.getElementById('total-with-discount').textContent = '0.00 ₽';
+                    }
+                } else {
+                    alert(data.error || 'Ошибка удаления товара');
+                }
+            });
+        });
+    });
+
+    // Применение купона
+    document.getElementById('coupon-form').addEventListener('submit', function (e) {
+        e.preventDefault();
+        const formData = new FormData(this);
+
+        fetch('/cart/apply_coupon/', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': csrftoken
+            },
+            body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                alert('Купон применён!');
+                updateTotals();
+            } else {
+                alert(data.error || 'Ошибка применения купона');
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

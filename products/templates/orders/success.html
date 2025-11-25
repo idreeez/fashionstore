@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+        html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    }
+
+    main {
+        flex: 1 0 auto;
+    }
+
+    footer {
+        flex-shrink: 0;
+    }
+    </style>
+<main class="pt-5 d-flex justify-content-center align-items-center min-vh-100"> 
+<div class="container mt-4">
+    <div class="alert alert-success">
+        <h4>Заказ #{{ order.id }} успешно оформлен!</h4>
+        <p>Мы свяжемся с вами для подтверждения.</p>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h5>Детали заказа</h5>
+        </div>
+        <div class="card-body">
+            <h6>Товары:</h6>
+            <ul class="list-group mb-3">
+                {% for item in order.items.all %}
+                <li class="list-group-item">
+                    {{ item.product.name }} × {{ item.quantity }}
+                    <span class="float-end">{{ item.price }} ₽</span>
+                </li>
+                {% endfor %}
+            </ul>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <h6>Контактные данные:</h6>
+                    <p>{{ order.name }}<br>
+                    {{ order.phone }}<br>
+                    {{ order.address }}</p>
+                </div>
+                <div class="col-md-6 text-end">
+                    <h6>Сумма заказа:</h6>
+                    <p>Товары: {{ order.subtotal }} ₽<br>
+                    Скидка: -{{ order.discount_amount }} ₽<br>
+                    <strong>Итого: {{ order.total }} ₽</strong></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</main>
+{% endblock %}

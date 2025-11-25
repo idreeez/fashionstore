@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <section class="hero-section">
+        <h1>Аура</h1>
+        <p>магазин женской дизайнерской одежды</p>
+    </section>
+
+    <section id="about" class="section text-center">
+        <div class="p-1">
+        <p>«Аура» — это элегантность, лаконичность и продуманный стиль. Мы создаем женскую одежду с душой, уделяя внимание каждой детали.</p>
+        </div>
+    </section>
+<div id="categories" class="container py-5">
+    {% for category, products in category_products.items %}
+    <section class="mb-5">
+        <h2 class="text-center mb-4" style="font-size: 70px;">{{ category.name }}</h2>
+        <div class="row">
+            {% for product in products %}
+            <div class="col-12 col-sm-6 col-md-4 mb-4">
+                <div class="card">
+                    <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">{{ product.name }}</h5>
+                        <p class="card-text">{{ product.price }} ₽</p>
+                        <a href="#"
+                           class="btn add-to-cart"
+                           data-product-id="{{ product.id }}"
+                           onclick="event.preventDefault(); addToCart(this)">
+                            В корзину
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+    {% endfor %}
+</div>
+<section class="section text-center border-top">
+        <h2 style="font-size: 70px;">Оформление заказа</h2>
+        <p>После добавления товаров в корзину, вы можете перейти к оформлению заказа. Мы доставим вашу покупку быстро и аккуратно.</p>
+        <a href="{% url 'orders:create_order' %}" class="btn btn-outline-dark">Перейти к оформлению</a>
+    </section>
+{% endblock %}

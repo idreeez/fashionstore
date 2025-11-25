@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+    {% load static %}
+    <title>Аура</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Tenor+Sans&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="shortcut icon" href="../../static/img/icon.png" type="image/png">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token }}">
+</head>
+<body>
+    {% csrf_token %} 
+    <header>
+        <div></div>
+        <h1 style="margin-bottom: 0;"><a href="{% url 'product_list' %}">Аура</a></h1>
+        <a href="{% url 'cart:cart' %}" class="position-relative">
+            Корзина
+        </a>
+    </header>
+
+
+
+    {% block content %}{% endblock %}
+
+
+    <footer>
+        <h2><a href="{% url 'product_list' %}">Аура</a></h2>
+        <div>
+            <a href="{% url 'product_list' %}">Главная</a> |
+            <a href="#about">О нас</a> |
+            <a href="#categories">Категории</a> |
+            <a href="{% url 'orders:create_order' %}">Оформление</a>
+        </div>
+    </footer>
+
+    {% if messages %}
+    <div class="alert-container">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show notification" 
+             role="alert"
+             data-autohide="true">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const alertContainer = document.createElement('div');
+        alertContainer.className = 'alert-container';
+        document.body.appendChild(alertContainer);
+
+        function showAlert(message, type='success') {
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type} alert-dismissible fade show fade-in`;
+            alert.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            `;
+            alertContainer.appendChild(alert);
+            setTimeout(() => {
+                alert.classList.add('fade-out');
+                setTimeout(() => alert.remove(), 500);
+            }, 4000);
+            alert.querySelector('.btn-close').addEventListener('click', function() {
+                alert.classList.add('fade-out');
+                setTimeout(() => alert.remove(), 500);
+            });
+        }
+
+        async function addToCart(button) {
+            const productId = button.getAttribute('data-product-id');
+            try {
+                const originalText = button.innerHTML;
+                button.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Добавляем...';
+                button.disabled = true;
+                const response = await fetch(`/cart/add/${productId}/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    }
+                });
+                if (!response.ok) throw new Error('Ошибка сети');
+                const data = await response.json();
+                const badge = document.querySelector('.cart-badge');
+                if (badge) badge.textContent = data.cart_count || 0;
+                showAlert('Товар добавлен в корзину!');
+            } catch (error) {
+                console.error('Ошибка:', error);
+                showAlert('Ошибка при добавлении в корзину', 'danger');
+            } finally {
+                button.innerHTML = 'В корзину';
+                button.disabled = false;
+            }
+        }
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+  document.addEventListener("DOMContentLoaded", function () {
+    const cards = document.querySelectorAll(".card");
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("in-view");
+        } else {
+          entry.target.classList.remove("in-view");
+        }
+      });
+    }, {
+      threshold: 0.7,
+    });
+
+    cards.forEach(card => observer.observe(card));
+  });
+</script>
+</body>
+</html>

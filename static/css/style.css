@@ -1,0 +1,177 @@
+html, body {
+    overflow-x: hidden;
+}
+
+/* Глобальный box-sizing — удобнее */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+*::selection{
+	background: rgb(37, 37, 37);
+	color: rgb(255, 255, 255);
+}
+@font-face {
+  font-family: 'MainFont';
+  src: url('../fonts/FrenchKissscript.ttf');
+  font-weight: normal;
+  font-style: normal;
+}
+body {
+    font-family: 'Tenor Sans', sans-serif;
+    background-color: #ffffff;
+    color: #000000;
+}
+
+.table-responsive {
+  overflow-x: auto;
+}
+h1, h2, h3, h4 {
+    font-family: 'MainFont';
+    font-size: 3rem;
+}
+
+a {
+    color: #000;
+    text-decoration: none;
+}
+footer a {
+    color: #ffffff;
+    text-decoration: none;
+}
+
+header {
+    background-color: #fff;
+    padding: 10px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.hero-section {
+    background-image: url('/static/img/hero.jpg');
+    background-size: cover;
+    background-position: center;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.363);
+    background-attachment: fixed;
+}
+
+.hero-section h1 {
+    font-size: 10rem;
+}
+
+.section {
+    padding: 60px 20px;
+}
+
+.alert-container {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    width: auto;
+    max-width: 80%;
+    transition: all 0.3s ease;
+}
+
+.alert.fade-in {
+    animation: fadeIn 0.3s;
+}
+
+.alert.fade-out {
+    animation: fadeOut 0.5s forwards;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeOut {
+    from { opacity: 1; transform: translateY(0); }
+    to { opacity: 0; transform: translateY(20px); }
+}
+
+html {
+    scroll-behavior: smooth;
+    overflow-x: hidden;
+}
+
+footer {
+    background-color: #000;
+    color: #fff;
+    padding: 40px 20px;
+    text-align: center;
+}
+.card {
+    border: 1px solid #000;
+    background-color: #fff;
+    border-radius: 0;
+    box-shadow: none;
+    font-family: 'Tenor Sans', serif;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+.card-img-top {
+    filter: grayscale(100%);
+    transition: filter 0.9s ease;
+    height: 500px;
+    object-fit: cover;
+    border-bottom: 1px solid #000;
+}
+
+.card.in-view .card-img-top {
+    filter: grayscale(0%);
+}
+.card-title {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #000;
+    text-transform: uppercase;
+}
+
+.card-text {
+    font-size: 1rem;
+    color: #555;
+    margin-bottom: 1rem;
+}
+
+.add-to-cart {
+    border: 1px solid #000;
+    background: transparent;
+    color: #000;
+    text-transform: uppercase;
+    font-weight: bold;
+    letter-spacing: 1px;
+    padding: 8px 16px;
+    transition: all 0.3s ease;
+}
+
+.add-to-cart:hover {
+    background: #000;
+    color: #fff;
+}
+@media (max-width: 576px) {
+    .hero-section h1 {
+    font-size: 7rem;
+}
+  h1 { font-size: 1.75rem; }
+  h2 { font-size: 1.4rem; }
+  .card-title { font-size: 1rem; }
+}
